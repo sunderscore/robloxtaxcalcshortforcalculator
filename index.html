@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PLS Donate & DevEx Tax Calculator</title> <link rel="icon" type="image/png" href="favicon.png" />
+  <title>Pls Donate & DevEx Calculator</title> <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -273,6 +273,7 @@
       <a href="index.html" class="nav-link active">Home</a>
       <a href="about.html" class="nav-link">About</a>
       <a href="suggest.html" class="nav-link">Suggest</a>
+      <a href="privacy.html" class="nav-link">Privacy</a>
     </nav>
     <h1>Roblox Tax Calculator</h1>
     <div class="tabs" role="tablist" aria-label="Calculator Modes">
@@ -398,8 +399,18 @@
             btn.classList.toggle("active", isActive);
             btn.setAttribute("aria-selected", isActive ? "true" : "false");
           });
-          
-          });
+
+          if (targetTab === 'devex') {
+            settingsDiv.style.display = 'none';
+          } else {
+            settingsDiv.style.display = 'flex';
+          }
+
+          localStorage.setItem('activeTab', targetTab);
+          location.hash = targetTab;
+
+          clearResults();
+        });
       });
 
       const tabList = document.querySelector('.tabs[role="tablist"]') || document.querySelector('.tabs');
@@ -585,4 +596,3 @@
   </script>
 </body>
 </html>
-

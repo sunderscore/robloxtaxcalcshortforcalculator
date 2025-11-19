@@ -1,4 +1,4 @@
-const CACHE_NAME = 'roblox-calc-v1';
+const CACHE_NAME = 'roblox-calc-v2';
 const ASSETS = [
   'index.html',
   'about.html',
