@@ -3,6 +3,7 @@ const ASSETS = [
   'index.html',
   'about.html',
   'privacy.html',
+  'suggest.html',
   'manifest.json',
   'favicon.png'
 ];

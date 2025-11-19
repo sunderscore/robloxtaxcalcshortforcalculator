@@ -273,7 +273,7 @@
       <a href="index.html" class="nav-link active">Home</a>
       <a href="about.html" class="nav-link">About</a>
     </nav>
-    <h1>Roblox Calculator</h1>
+    <h1>Roblox Tax Calculator</h1>
     <div class="tabs" role="tablist" aria-label="Calculator Modes">
       <button id="tab-afterTax" class="tab-btn active" role="tab" aria-selected="true" aria-controls="afterTax" data-tab="afterTax">After Tax</button>
       <button id="tab-beforeTax" class="tab-btn" role="tab" aria-selected="false" aria-controls="beforeTax" data-tab="beforeTax">Before Tax</button>
@@ -397,8 +397,18 @@
             btn.classList.toggle("active", isActive);
             btn.setAttribute("aria-selected", isActive ? "true" : "false");
           });
-          
-          });
+
+          if (targetTab === 'devex') {
+            settingsDiv.style.display = 'none';
+          } else {
+            settingsDiv.style.display = 'flex';
+          }
+
+          localStorage.setItem('activeTab', targetTab);
+          location.hash = targetTab;
+
+          clearResults();
+        });
       });
 
       const tabList = document.querySelector('.tabs[role="tablist"]') || document.querySelector('.tabs');

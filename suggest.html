@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Suggest • Roblox Calculator</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    :root {
+      --primary-color: #00ccff;
+      --secondary-color: #8a2be2;
+      --bg-dark-1: #000;
+      --bg-dark-2: #111;
+      --bg-dark-3: #1a1a1a;
+      --bg-container: rgba(30, 30, 30, 0.95);
+      --text-light: #fff;
+      --text-dim: #ccc;
+      --text-muted: #777;
+      --accent: #00ffcc;
+    }
+    body { font-family: "Poppins", sans-serif; background: radial-gradient(circle at top, var(--bg-dark-3) 0%, var(--bg-dark-1) 100%); color: var(--text-light); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+    .container { background: var(--bg-container); border: 2px solid var(--primary-color); border-radius: 20px; box-shadow: 0 0 20px var(--primary-color)80; padding: 30px; width: 100%; max-width: 720px; text-align: left; backdrop-filter: blur(8px); }
+    h1 { margin: 0 0 12px 0; font-size: 1.8em; color: var(--primary-color); text-shadow: 0 0 10px var(--primary-color); text-align: center; }
+    p, label { color: var(--text-dim); }
+    .site-nav { display: flex; gap: 10px; justify-content: center; margin-bottom: 12px; }
+    .nav-link { color: var(--text-dim); text-decoration: none; background: var(--bg-dark-2); border: 1px solid var(--primary-color); padding: 6px 10px; border-radius: 8px; font-weight: 600; transition: all 0.2s; }
+    .nav-link:hover { color: var(--text-light); border-color: var(--primary-color); box-shadow: 0 0 6px var(--primary-color); }
+    .nav-link.active { color: var(--text-light); background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)); box-shadow: 0 0 8px var(--primary-color); }
+    textarea, select, input[type="text"] { width: 100%; background: var(--bg-dark-2); color: var(--text-light); border: 1px solid #1f1f1f; border-radius: 10px; padding: 10px; box-sizing: border-box; }
+    textarea { min-height: 140px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    button { background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)); color: #fff; border: none; border-radius: 10px; padding: 10px 14px; cursor: pointer; box-shadow: 0 0 8px var(--primary-color)80; font-weight: 600; }
+    button.secondary { background: var(--bg-dark-2); color: var(--text-dim); border: 1px solid var(--primary-color)80; box-shadow: none; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .capsule { margin-top: 16px; border: 1px dashed var(--primary-color); border-radius: 14px; padding: 12px; position: relative; overflow: hidden; }
+    .fill { position: absolute; left: 0; bottom: 0; height: 8px; background: linear-gradient(90deg, var(--accent), var(--primary-color)); width: 0%; transition: width 0.3s ease; box-shadow: 0 0 12px var(--accent); }
+    .hint { font-size: 0.85em; color: var(--text-muted); margin-top: 6px; }
+    .repo-config { font-size: 0.85em; color: var(--text-muted); }
+    .repo-config a { color: var(--primary-color); cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="site-nav" aria-label="Primary">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="suggest.html" class="nav-link active">Suggest</a>
+      <a href="privacy.html" class="nav-link">Privacy</a>
+    </nav>
+    <h1>Suggestion Capsule</h1>
+    <p>Drop your idea below. We’ll launch a capsule that opens a pre-filled GitHub Issue so it reaches the developer fast.</p>
+    <div class="row">
+      <div>
+        <label for="category">Category</label>
+        <select id="category">
+          <option value="Feature">Feature</option>
+          <option value="Bug">Bug</option>
+          <option value="UX">UX</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div>
+        <label for="contact">Contact (optional, Roblox @username)</label>
+        <input id="contact" type="text" placeholder="e.g. @superfluffypawss" />
+      </div>
+    </div>
+    <label for="message" style="margin-top:10px; display:block;">Your suggestion</label>
+    <textarea id="message" placeholder="Describe what you'd like to see, or what you'd improve..."></textarea>
+    <div class="capsule">
+      <div class="fill" id="fill"></div>
+      <div class="hint">Capsule readiness increases as you type. Aim for details!</div>
+    </div>
+    <div class="repo-config" id="repoConfig"></div>
+    <div class="actions">
+      <button id="openIssue" disabled>Launch to GitHub</button>
+      <button id="copyLink" class="secondary" disabled>Copy share link</button>
+      <button id="reset" class="secondary">Reset</button>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const $ = (s) => document.querySelector(s);
+      const messageEl = $('#message');
+      const categoryEl = $('#category');
+      const contactEl = $('#contact');
+      const fillEl = $('#fill');
+      const openIssueBtn = $('#openIssue');
+      const copyLinkBtn = $('#copyLink');
+      const repoConfig = $('#repoConfig');
+      const KEY = 'suggest.repoSlug';
+      const DEFAULT_REPO = 'sunderscore/robloxtaxcalcshortforcalculator';
+
+      function guessRepoSlug(){
+        return localStorage.getItem(KEY) || DEFAULT_REPO;
+      }
+
+      function setRepoSlug(slug){
+        if(slug){ localStorage.setItem(KEY, slug); }
+        renderRepoConfig();
+        updateButtons();
+      }
+
+      function renderRepoConfig(){
+        const slug = guessRepoSlug();
+        const text = `Sending to GitHub repo: ${slug} `;
+        repoConfig.innerHTML = `${text}<a id=\"editRepo\" role=\"button\" tabindex=\"0\">change</a>`;
+        const edit = document.getElementById('editRepo');
+        edit.onclick = () => {
+          const current = guessRepoSlug();
+          const val = prompt('Enter GitHub repo slug (owner/repo):', current || 'owner/repo');
+          if(val && /.+\/.+/.test(val)) setRepoSlug(val.trim());
+        };
+      }
+
+      function readiness(){
+        const len = (messageEl.value||'').trim().length;
+        const pct = Math.max(8, Math.min(100, Math.round((len/240)*100)));
+        fillEl.style.width = pct + '%';
+        return len >= 8; // minimal useful content
+      }
+
+      function encodeState(){
+        const obj = { m: messageEl.value||'', c: categoryEl.value||'Feature', u: contactEl.value||'' };
+        try { return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))); } catch(e) { return ''; }
+      }
+      function decodeState(s){
+        try { return JSON.parse(decodeURIComponent(escape(atob(s)))); } catch(e) { return null; }
+      }
+
+      function updateButtons(){
+        const ok = readiness();
+        openIssueBtn.disabled = !ok;
+        copyLinkBtn.disabled = !ok;
+      }
+
+      function issueUrl(){
+        const slug = guessRepoSlug();
+        if(!slug) return '#';
+        const title = encodeURIComponent(`[${categoryEl.value}] Suggestion`);
+        const lines = [
+          `Suggestion:`,
+          messageEl.value.trim(),
+          '',
+          `Category: ${categoryEl.value}`,
+          contactEl.value ? `Contact: ${contactEl.value}` : '',
+          `Page: ${location.origin}${location.pathname}`,
+          `User-Agent: ${navigator.userAgent}`,
+          `Time: ${new Date().toISOString()}`,
+          '',
+          '_Submitted via Suggestion Capsule_'
+        ].filter(Boolean).join('\n');
+        const body = encodeURIComponent(lines);
+        return `https://github.com/${slug}/issues/new?title=${title}&body=${body}`;
+      }
+
+      function loadFromHash(){
+        const m = location.hash.match(/[#&]s=([^&]+)/);
+        if(!m) return;
+        const obj = decodeState(m[1]);
+        if(obj){
+          messageEl.value = obj.m || '';
+          categoryEl.value = obj.c || 'Feature';
+          contactEl.value = obj.u || '';
+        }
+      }
+
+      // events
+      messageEl.addEventListener('input', () => { readiness(); updateButtons(); });
+      categoryEl.addEventListener('change', updateButtons);
+      contactEl.addEventListener('input', updateButtons);
+
+      openIssueBtn.addEventListener('click', () => {
+        const url = issueUrl();
+        if(url === '#') { alert('Set your GitHub repo slug first.'); return; }
+        window.open(url, '_blank');
+      });
+
+      copyLinkBtn.addEventListener('click', async () => {
+        const s = encodeState();
+        const shareUrl = `${location.origin}${location.pathname}#s=${s}`;
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          copyLinkBtn.textContent = 'Copied!';
+          setTimeout(() => copyLinkBtn.textContent = 'Copy share link', 1200);
+        } catch(e) {}
+      });
+
+      $('#reset').addEventListener('click', () => {
+        messageEl.value = '';
+        contactEl.value = '';
+        categoryEl.value = 'Feature';
+        readiness();
+        updateButtons();
+      });
+
+      // init
+      renderRepoConfig();
+      loadFromHash();
+      readiness();
+      updateButtons();
+    })();
+  </script>
+</body>
+</html>
