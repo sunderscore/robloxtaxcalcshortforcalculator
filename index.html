@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pls Donate & DevEx Calculator</title> <link rel="icon" type="image/png" href="favicon.png" />
+  <title>PLS Donate & DevEx Tax Calculator</title> <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -398,21 +398,8 @@
             btn.classList.toggle("active", isActive);
             btn.setAttribute("aria-selected", isActive ? "true" : "false");
           });
-
-          // Show/Hide game tax toggle on DevEx tab
-          if (targetTab === 'devex') {
-            settingsDiv.style.display = 'none';
-          } else {
-            settingsDiv.style.display = 'flex';
-          }
-
-          // Persist selected tab and deep-link
-          localStorage.setItem('activeTab', targetTab);
-          location.hash = targetTab;
-
-          // Clear transient results when switching modes
-          clearResults();
-        });
+          
+          });
       });
 
       const tabList = document.querySelector('.tabs[role="tablist"]') || document.querySelector('.tabs');
@@ -598,3 +585,4 @@
   </script>
 </body>
 </html>
+
