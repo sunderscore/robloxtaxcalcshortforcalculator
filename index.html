@@ -272,6 +272,7 @@
     <nav class="site-nav" aria-label="Primary">
       <a href="index.html" class="nav-link active">Home</a>
       <a href="about.html" class="nav-link">About</a>
+      <a href="suggest.html" class="nav-link">Suggest</a>
     </nav>
     <h1>Roblox Tax Calculator</h1>
     <div class="tabs" role="tablist" aria-label="Calculator Modes">
@@ -398,15 +399,18 @@
             btn.setAttribute("aria-selected", isActive ? "true" : "false");
           });
 
+          // Show/Hide game tax toggle on DevEx tab
           if (targetTab === 'devex') {
             settingsDiv.style.display = 'none';
           } else {
             settingsDiv.style.display = 'flex';
           }
 
+          // Persist selected tab and deep-link
           localStorage.setItem('activeTab', targetTab);
           location.hash = targetTab;
 
+          // Clear transient results when switching modes
           clearResults();
         });
       });
