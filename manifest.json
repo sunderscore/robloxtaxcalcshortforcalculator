@@ -1,0 +1,16 @@
+{
+  "name": "Roblox PLS Donate & DevEx Calculator",
+  "short_name": "Roblox Calc",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#00ccff",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pls Donate & DevEx Calculator</title> <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary-color: #00ccff;
+      --secondary-color: #8a2be2;
+      --success-color: #00ffcc;
+      --error-color: #ff6b6b;
+      --bg-dark-1: #000;
+      --bg-dark-2: #111;
+      --bg-dark-3: #1a1a1a;
+      --bg-container: rgba(30, 30, 30, 0.95);
+      --text-light: #fff;
+      --text-dim: #ccc;
+      --text-muted: #777;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: radial-gradient(circle at top, var(--bg-dark-3) 0%, var(--bg-dark-1) 100%);
+      color: var(--text-light);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .container {
+      background: var(--bg-container);
+      border: 2px solid var(--primary-color);
+      border-radius: 20px;
+      box-shadow: 0 0 20px var(--primary-color)80;
+      padding: 30px;
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 1.8em;
+      color: var(--primary-color);
+      text-shadow: 0 0 10px var(--primary-color);
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      background: var(--bg-dark-2);
+      color: var(--text-light);
+      font-size: 1em;
+      font-family: "Poppins", sans-serif;
+      text-align: center;
+      box-shadow: inset 0 0 5px var(--primary-color)50;
+      box-sizing: border-box;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: var(--bg-dark-2);
+      border: none;
+      padding: 10px;
+      color: var(--text-dim);
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.3s;
+      margin: 0 5px;
+      font-size: 0.9em;
+      font-weight: 600;
+      font-family: "Poppins", sans-serif;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      color: var(--text-light);
+      box-shadow: 0 0 10px var(--primary-color)80;
+    }
+
+    .tab {
+      display: none;
+    }
+
+    .tab.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+    
+    .quick-add {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+    .quick-btn {
+      flex: 1;
+      margin: 0 4px;
+      background: var(--bg-dark-2);
+      border: 1px solid var(--primary-color)50;
+      color: var(--text-dim);
+      padding: 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: "Poppins", sans-serif;
+    }
+    .quick-btn:hover {
+      background: var(--primary-color);
+      color: var(--bg-dark-1);
+    }
+
+    .result-container {
+      margin-top: 20px;
+      min-height: 4.5em; 
+      position: relative; 
+    }
+    
+    .result {
+      font-size: 1.25em;
+      font-weight: 600;
+      color: var(--success-color);
+      text-shadow: 0 0 8px var(--success-color);
+      word-wrap: break-word;
+    }
+
+    .result.error {
+      color: var(--error-color);
+      text-shadow: 0 0 8px var(--error-color)80;
+      font-weight: 400;
+    }
+
+    .copy-btn {
+      position: absolute;
+      right: 0;
+      top: 0;
+      background: var(--bg-dark-3);
+      border: 1px solid var(--primary-color);
+      color: var(--primary-color);
+      border-radius: 6px;
+      font-size: 1.2em;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: all 0.2s;
+      width: 32px; 
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .copy-btn:hover {
+      opacity: 1;
+      box-shadow: 0 0 5px var(--primary-color);
+    }
+    .copy-btn:active {
+      transform: scale(0.95);
+    }
+
+    .info {
+      font-size: 0.8em;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .settings {
+      margin-top: 20px;
+      font-size: 0.8em;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .settings input {
+      margin-right: 8px;
+      cursor: pointer;
+    }
+    .settings label {
+      cursor: pointer;
+    }
+
+    footer {
+      margin-top: 25px;
+      font-size: 0.8em;
+      color: var(--text-muted);
+    }
+    .site-nav {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    .nav-link {
+      color: var(--text-dim);
+      text-decoration: none;
+      background: var(--bg-dark-2);
+      border: 1px solid var(--primary-color);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .nav-link:hover {
+      color: var(--text-light);
+      border-color: var(--primary-color);
+      box-shadow: 0 0 6px var(--primary-color);
+    }
+    .nav-link.active {
+      color: var(--text-light);
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      box-shadow: 0 0 8px var(--primary-color);
+    }
+
+    .tab-btn:focus-visible,
+    .quick-btn:focus-visible,
+    .copy-btn:focus-visible,
+    input:focus-visible,
+    .nav-link:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+    .visually-hidden {
+      position: absolute !important;
+      height: 1px; width: 1px;
+      overflow: hidden; clip: rect(1px, 1px, 1px, 1px);
+      white-space: nowrap;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="site-nav" aria-label="Primary">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="about.html" class="nav-link">About</a>
+    </nav>
+    <h1>Roblox Calculator</h1>
+    <div class="tabs" role="tablist" aria-label="Calculator Modes">
+      <button id="tab-afterTax" class="tab-btn active" role="tab" aria-selected="true" aria-controls="afterTax" data-tab="afterTax">After Tax</button>
+      <button id="tab-beforeTax" class="tab-btn" role="tab" aria-selected="false" aria-controls="beforeTax" data-tab="beforeTax">Before Tax</button>
+      <button id="tab-devex" class="tab-btn" role="tab" aria-selected="false" aria-controls="devex" data-tab="devex">DevEx</button>
+    </div>
+
+    <div class="tab active" id="afterTax" role="tabpanel" aria-labelledby="tab-afterTax" aria-hidden="false">
+      <label for="donation" class="visually-hidden">Donation amount (Robux)</label>
+      <input type="number" id="donation" placeholder="Enter donation amount (R$)" aria-label="Donation amount" inputmode="numeric" pattern="\d*" min="1" step="1" />
+      
+      <div class="quick-add">
+          <button class="quick-btn" data-amount="10">10</button>
+          <button class="quick-btn" data-amount="50">50</button>
+          <button class="quick-btn" data-amount="100">100</button>
+          <button class="quick-btn" data-amount="1000">1K</button>
+      </div>
+      
+      <div class="result-container">
+        <div class="result" id="resultAfter" aria-live="polite"></div>
+        <button class="copy-btn" id="copyAfter" aria-label="Copy result" style="display: none;">📋</button>
+        <p class="info" id="infoAfter"></p>
+      </div>
+    </div>
+
+    <div class="tab" id="beforeTax" role="tabpanel" aria-labelledby="tab-beforeTax" aria-hidden="true">
+      <label for="goal" class="visually-hidden">Target amount to receive (Robux)</label>
+      <input type="number" id="goal" placeholder="Enter target amount (R$)" aria-label="Target amount" inputmode="numeric" pattern="\d*" min="1" step="1" />
+        <div class="result-container">
+         <div class="result" id="resultBefore" aria-live="polite"></div>
+         <button class="copy-btn" id="copyBefore" aria-label="Copy result" style="display: none;">📋</button>
+         <p class="info" id="infoBefore"></p>
+      </div>
+    </div>
+    
+    <div class="tab" id="devex" role="tabpanel" aria-labelledby="tab-devex" aria-hidden="true">
+      <label for="robuxInput" class="visually-hidden">Robux amount</label>
+      <input type="number" id="robuxInput" placeholder="Enter Robux amount (R$)" aria-label="Robux amount" inputmode="numeric" pattern="\d*" min="1" step="1" />
+      <label for="usdInput" class="visually-hidden">USD amount</label>
+      <input type="number" id="usdInput" placeholder="Enter USD amount ($)" aria-label="USD amount" inputmode="decimal" step="0.01" />
+        <div class="result-container">
+         <div class="result" id="devexInfo" aria-live="polite"></div>
+         <button class="copy-btn" id="copyDevex" aria-label="Copy DevEx result" style="display: none;">📋</button>
+         <p class="info" id="infoDevex">Rate: $0.0035/R$. Min 30,000 R$ to cash out.</p>
+      </div>
+    </div>
+
+    <div class="settings">
+      <input type="checkbox" id="gameTaxToggle" checked>
+      <label for="gameTaxToggle">Include 10% game tax (Pls Donate)</label>
+    </div>
+
+    <footer>
+      Made by <a href="https://www.roblox.com/users/4323264043/profile" target="_blank" rel="noopener noreferrer">@superfluffypawss</a>
+      <br />
+      Not affiliated with PLS Donate or Roblox
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      
+      const tabButtons = document.querySelectorAll(".tab-btn");
+      const tabs = document.querySelectorAll(".tab");
+      const donationInput = document.getElementById("donation");
+      const goalInput = document.getElementById("goal");
+      const resultAfter = document.getElementById("resultAfter");
+      const resultBefore = document.getElementById("resultBefore");
+      const infoAfter = document.getElementById("infoAfter");
+      const infoBefore = document.getElementById("infoBefore");
+      const quickButtons = document.querySelectorAll(".quick-btn");
+      const gameTaxToggle = document.getElementById("gameTaxToggle");
+      const copyAfterBtn = document.getElementById("copyAfter");
+      const copyBeforeBtn = document.getElementById("copyBefore");
+      
+      const devexTab = document.getElementById("devex");
+      const robuxInput = document.getElementById("robuxInput");
+      const usdInput = document.getElementById("usdInput");
+      const devexInfo = document.getElementById("devexInfo");
+      const infoDevex = document.getElementById("infoDevex");
+      const settingsDiv = document.querySelector(".settings"); 
+
+      const ROBLOX_TAX_RATE = 0.7; 
+      const PLS_DONATE_TAX_RATE = 0.6; 
+      const ERROR_MSG = "Please enter a valid amount.";
+      
+      const DEVEX_RATE = 0.0035;
+      const DEVEX_MINIMUM = 30000;
+
+      function getCurrentTaxRate() {
+        return gameTaxToggle.checked ? PLS_DONATE_TAX_RATE : ROBLOX_TAX_RATE;
+      }
+
+      function updateInfoText() {
+          const rate = getCurrentTaxRate();
+          const percent = Math.round(rate * 100);
+          const infoText = `You receive ${percent}% of the donation.`;
+          infoAfter.textContent = infoText;
+          infoBefore.textContent = `Calculates donation needed for you to get ${percent}%.`;
+      }
+
+      function copyToClipboard(text, button) {
+        if (!navigator.clipboard) return;
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = button.textContent;
+          button.textContent = "✅";
+          setTimeout(() => { button.textContent = originalText; }, 1500);
+        }).catch(err => { console.error('Failed to copy: ', err); });
+      }
+
+      tabButtons.forEach(button => {
+        button.addEventListener("click", () => {
+          const targetTab = button.dataset.tab;
+
+          tabs.forEach(panel => {
+            const active = panel.id === targetTab;
+            panel.classList.toggle("active", active);
+            panel.setAttribute("aria-hidden", active ? "false" : "true");
+          });
+          tabButtons.forEach(btn => {
+            const isActive = btn.dataset.tab === targetTab;
+            btn.classList.toggle("active", isActive);
+            btn.setAttribute("aria-selected", isActive ? "true" : "false");
+          });
+          
+          });
+      });
+
+      const tabList = document.querySelector('.tabs[role="tablist"]') || document.querySelector('.tabs');
+      tabList.addEventListener('keydown', (e) => {
+        const current = document.activeElement;
+        if (!current || current.getAttribute('role') !== 'tab') return;
+        const buttons = Array.from(tabButtons);
+        const i = buttons.indexOf(current);
+        if (e.key === 'ArrowRight') buttons[(i + 1) % buttons.length].focus();
+        if (e.key === 'ArrowLeft') buttons[(i - 1 + buttons.length) % buttons.length].focus();
+      });
+
+      function calculateAfterTax() {
+        const donation = parseFloat(donationInput.value);
+        const TAX_RATE = getCurrentTaxRate();
+
+        if (isNaN(donation) || donation <= 0) {
+          resultAfter.textContent = donationInput.value ? ERROR_MSG : "";
+          resultAfter.classList.toggle("error", !!donationInput.value);
+          infoAfter.style.display = "block";
+          copyAfterBtn.style.display = "none";
+          return;
+        }
+        
+        resultAfter.classList.remove("error");
+        infoAfter.style.display = "none";
+        copyAfterBtn.style.display = "flex";
+        
+        const received = Math.round(donation * TAX_RATE); 
+        resultAfter.textContent = `You will receive: ${received.toLocaleString()} R$`;
+      }
+
+      function calculateBeforeTax() {
+        const goal = parseFloat(goalInput.value);
+        const TAX_RATE = getCurrentTaxRate();
+
+        if (isNaN(goal) || goal <= 0) {
+          resultBefore.textContent = goalInput.value ? ERROR_MSG : "";
+          resultBefore.classList.toggle("error", !!goalInput.value);
+          infoBefore.style.display = "block";
+          copyBeforeBtn.style.display = "none";
+          return;
+        }
+        
+        resultBefore.classList.remove("error");
+        infoBefore.style.display = "none";
+        copyBeforeBtn.style.display = "flex";
+
+        const needed = Math.ceil(goal / TAX_RATE);
+        resultBefore.textContent = `They must donate: ${needed.toLocaleString()} R$`;
+      }
+      
+      function calculateRobuxToUsd() {
+        const robux = parseFloat(robuxInput.value);
+        if (isNaN(robux) || robux <= 0) {
+          usdInput.value = ""; 
+          devexInfo.textContent = "";
+          infoDevex.style.display = "block";
+          return;
+        }
+
+        infoDevex.style.display = "none";
+        const usd = robux * DEVEX_RATE;
+        usdInput.value = usd.toFixed(2); 
+
+        if (robux < DEVEX_MINIMUM) {
+          devexInfo.textContent = `You need ${DEVEX_MINIMUM.toLocaleString()} R$ to cash out.`;
+          devexInfo.classList.add("error");
+        } else {
+          devexInfo.textContent = `Eligible for DevEx!`;
+          devexInfo.classList.remove("error");
+        }
+      }
+
+      function calculateUsdToRobux() {
+        const usd = parseFloat(usdInput.value);
+        if (isNaN(usd) || usd <= 0) {
+          robuxInput.value = ""; 
+          devexInfo.textContent = "";
+          infoDevex.style.display = "block";
+          return;
+        }
+
+        infoDevex.style.display = "none";
+        const robux = usd / DEVEX_RATE;
+        robuxInput.value = Math.ceil(robux); 
+
+        if (robux < DEVEX_MINIMUM) {
+          devexInfo.textContent = `This is less than the ${DEVEX_MINIMUM.toLocaleString()} R$ minimum.`;
+          devexInfo.classList.add("error");
+        } else {
+          devexInfo.textContent = `Eligible for DevEx!`;
+          devexInfo.classList.remove("error");
+        }
+      }
+
+      function updateDevexCopyButton() {
+        const copyBtn = document.getElementById('copyDevex');
+        const hasValues = (robuxInput.value && parseFloat(robuxInput.value) > 0) || (usdInput.value && parseFloat(usdInput.value) > 0);
+        if (copyBtn) copyBtn.style.display = hasValues ? 'flex' : 'none';
+      }
+
+      function clearResults() {
+          donationInput.value = "";
+          goalInput.value = "";
+          resultAfter.textContent = "";
+          resultBefore.textContent = "";
+          resultAfter.classList.remove("error");
+          resultBefore.classList.remove("error");
+          infoAfter.style.display = "block";
+          infoBefore.style.display = "block";
+          copyAfterBtn.style.display = "none";
+          copyBeforeBtn.style.display = "none";
+          
+          robuxInput.value = "";
+          usdInput.value = "";
+          devexInfo.textContent = "";
+          infoDevex.style.display = "block";
+          devexInfo.classList.remove("error");
+          const copyDevexBtnRef = document.getElementById('copyDevex');
+          if (copyDevexBtnRef) copyDevexBtnRef.style.display = 'none';
+      }
+
+      donationInput.addEventListener("input", calculateAfterTax);
+      goalInput.addEventListener("input", calculateBeforeTax);
+      gameTaxToggle.addEventListener("change", () => {
+          updateInfoText();
+          if (donationInput.value) calculateAfterTax();
+          if (goalInput.value) calculateBeforeTax();
+      });
+
+      quickButtons.forEach(button => {
+        button.addEventListener("click", (e) => {
+          const amount = e.currentTarget.dataset.amount;
+          donationInput.value = parseInt(amount, 10);
+          calculateAfterTax();
+        });
+      });
+
+      copyAfterBtn.addEventListener("click", () => {
+        const donation = parseFloat(donationInput.value);
+        if (!isNaN(donation) && donation > 0) {
+          const TAX_RATE = getCurrentTaxRate();
+          const received = Math.round(donation * TAX_RATE);
+          copyToClipboard(received.toString(), copyAfterBtn);
+        }
+      });
+      copyBeforeBtn.addEventListener("click", () => {
+        const goal = parseFloat(goalInput.value);
+        if (!isNaN(goal) && goal > 0) {
+          const TAX_RATE = getCurrentTaxRate();
+          const needed = Math.ceil(goal / TAX_RATE);
+          copyToClipboard(needed.toString(), copyBeforeBtn);
+        }
+      });
+      
+      robuxInput.addEventListener("input", () => { calculateRobuxToUsd(); updateDevexCopyButton(); });
+      usdInput.addEventListener("input", () => { calculateUsdToRobux(); updateDevexCopyButton(); });
+
+      const copyDevexBtn = document.getElementById('copyDevex');
+      if (copyDevexBtn) {
+        copyDevexBtn.addEventListener('click', () => {
+          const robux = parseFloat(robuxInput.value) || 0;
+          const usd = parseFloat(usdInput.value) || 0;
+          const line = `${robux.toLocaleString()} R$ ≈ $${usd.toFixed ? usd.toFixed(2) : usd}`;
+          copyToClipboard(line, copyDevexBtn);
+        });
+      }
+
+      updateInfoText(); 
+
+      const hash = location.hash.replace('#','');
+      const savedTab = localStorage.getItem('activeTab');
+      const initialTab = ['afterTax','beforeTax','devex'].includes(hash) ? hash : (savedTab || 'afterTax');
+      const initialBtn = document.querySelector(`.tab-btn[data-tab="${initialTab}"]`);
+      if (initialBtn) initialBtn.click();
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW registration failed:', err));
+      }
+
+    });
+  </script>
+</body>
+</html>
